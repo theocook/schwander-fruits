@@ -1,14 +1,16 @@
-// src/pages/ProductPage.jsx
 import React, { useState, useMemo, useEffect } from 'react';
 import { products } from '../data/products';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 
-const mainCategories = ['Tous les produits', 'Fruits', 'Légumes', 'Autres'];
+const mainCategories = ['Tous', 'Fruits', 'Légumes', 'Autres'];
 
 const ProductPage = () => {
-  const [activeMain, setActiveMain] = useState('Tous les produits');
+  const [activeMain, setActiveMain] = useState('Tous');
   const [activeSub, setActiveSub] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [subOpen, setSubOpen] = useState(true);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -16,131 +18,168 @@ const ProductPage = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Scroll to top on search
-  useEffect(() => {
-    if (searchTerm) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [searchTerm]);
-
-  // Define subcategories based on main category
   const subCategories = useMemo(() => {
-    if (activeMain === 'Fruits') return ['Tous les fruits', 'Pommes', 'Poires', 'Cerises', 'Prunes', 'Pruneaux', 'Pêches', 'Abricots', "Fruits d'été"];
-    if (activeMain === 'Légumes') return ['Tous les légumes', 'Légumes', 'Pommes de terre'];
+    if (activeMain === 'Fruits') return ['Tous les fruits', 'Pommes', 'Poires', 'Cerises', 'Abricots', 'Pêches'];
+    if (activeMain === 'Légumes') return ['Tous les légumes', 'Pommes de terre', 'Légumes verts'];
     return [];
   }, [activeMain]);
 
-  // Initialize subcategory when main changes
   useEffect(() => {
-    setActiveSub(subCategories.length ? subCategories[0] : null);
+    setActiveSub(subCategories[0] || null);
   }, [subCategories]);
 
-  // Filter products by main, subcategory and search (name or category)
   const filtered = useMemo(() =>
     products.filter(p => {
       const term = searchTerm.toLowerCase();
       const matchesSearch = p.name.toLowerCase().includes(term) || p.category.toLowerCase().includes(term);
 
-      if (activeMain === 'Tous les produits') return matchesSearch;
+      if (activeMain === 'Tous') return matchesSearch;
       if (activeMain === 'Fruits') {
-        const fruitCats = ['Pommes', 'Poires', 'Cerises', 'Prunes', 'Pruneaux', 'Pêches', 'Abricots', "Fruits d'été"];
-        if (activeSub === 'Tous les fruits') return matchesSearch && fruitCats.includes(p.category);
+        const cats = ['Pommes', 'Poires', 'Cerises', 'Abricots', 'Pêches'];
+        if (activeSub === 'Tous les fruits') return matchesSearch && cats.includes(p.category);
         return matchesSearch && p.category === activeSub;
       }
       if (activeMain === 'Légumes') {
-        const vegCats = ['Légumes', 'Pommes de terre'];
-        if (activeSub === 'Tous les légumes') return matchesSearch && vegCats.includes(p.category);
+        const cats = ['Pommes de terre', 'Légumes verts'];
+        if (activeSub === 'Tous les légumes') return matchesSearch && cats.includes(p.category);
         return matchesSearch && p.category === activeSub;
       }
-      // Autres
       return matchesSearch && p.category === 'Autres produits';
     }),
     [activeMain, activeSub, searchTerm]
   );
 
   return (
-    <main className="container" style={{ padding: isMobile ? '1rem 1rem' : '2rem 1rem' }}>
-      <h2 style={{ color: '#3a6f4b', textAlign: 'center', marginBottom: isMobile ? '1rem' : '2rem' }}>Notre sélection de produits</h2>
+    <main className="container" style={{ padding: isMobile ? '1rem' : '2rem' }}>
+      <h2 style={{ textAlign: 'center', color: '#3a6f4b', marginBottom: '1rem' }}>
+        Découvre notre sélection
+      </h2>
 
-      {/* Sticky search & filters container */}
+      {/* Champ de recherche */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: '1rem'
+        }}
+      >
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          placeholder="🔍 Rechercher un produit..."
+          style={{
+            width: '100%',
+            maxWidth: '500px',
+            padding: '0.75rem 1rem',
+            borderRadius: '999px',
+            border: '1px solid #ccc',
+            fontSize: '1rem'
+          }}
+        />
+      </motion.div>
+
+      {/* Catégories principales (scroll horizontal) */}
       <div style={{
-        position: 'sticky',
-        top: isMobile ? '60px' : '80px',
-        backgroundColor: '#fafafa',
-        zIndex: 50,
-        padding: isMobile ? '0.5rem 0' : '1rem 0'
+        display: 'flex',
+        overflowX: 'auto',
+        gap: '0.75rem',
+        padding: '0.5rem 0',
+        marginBottom: '0.5rem'
       }}>
-        {/* Search */}
-        <div style={{ margin: isMobile ? '0.25rem 0' : '0.5rem 0' }}>
-          <input
-            type="text"
-            placeholder="Rechercher un produit ou catégorie..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+        {mainCategories.map(cat => (
+          <motion.button
+            key={cat}
+            onClick={() => { setActiveMain(cat); setSearchTerm(''); }}
+            whileTap={{ scale: 0.95 }}
             style={{
-              width: '100%',
-              padding: isMobile ? '0.5rem' : '0.75rem',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              fontSize: '1rem'
+              flexShrink: 0,
+              padding: '0.5rem 1rem',
+              borderRadius: '999px',
+              border: '1px solid',
+              borderColor: activeMain === cat ? '#2a7f62' : '#ccc',
+              background: activeMain === cat ? '#e6f4ec' : 'white',
+              color: activeMain === cat ? '#2a7f62' : '#555',
+              fontWeight: activeMain === cat ? 600 : 400,
+              cursor: 'pointer'
             }}
-          />
-        </div>
-        {/* Main categories */}
-        <div style={{ display: 'flex', gap: isMobile ? '0.5rem' : '1rem', flexWrap: 'wrap', margin: isMobile ? '0.25rem 0' : '0.5rem 0' }}>
-          {mainCategories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => { setActiveMain(cat); setSearchTerm(''); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              style={{
-                padding: isMobile ? '0.4rem 0.8rem' : '0.5rem 1rem',
-                border: 'none',
-                borderBottom: activeMain === cat ? '3px solid #2a7f62' : '3px solid transparent',
-                background: 'none',
-                cursor: 'pointer',
-                fontWeight: activeMain === cat ? '600' : '400',
-                color: activeMain === cat ? '#2a7f62' : '#555',
-                fontSize: isMobile ? '0.9rem' : '1rem'
-              }}
-            >{cat}</button>
-          ))}
-        </div>
-        {/* Subcategory */}
-        {subCategories.length > 0 && (
-          <div style={{ display: 'flex', gap: isMobile ? '0.5rem' : '0.75rem', flexWrap: 'wrap', marginBottom: isMobile ? '0.25rem' : '0.5rem' }}>
-            {subCategories.map(sub => (
-              <button
-                key={sub}
-                onClick={() => { setActiveSub(sub); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                style={{
-                  padding: isMobile ? '0.3rem 0.6rem' : '0.4rem 0.8rem',
-                  border: activeSub === sub ? '2px solid #2a7f62' : '1px solid #ccc',
-                  background: activeSub === sub ? '#e6f4ec' : 'white',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  color: activeSub === sub ? '#2a7f62' : '#555',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem'
-                }}
-              >{sub}</button>
-            ))}
-          </div>
-        )}
+          >
+            {cat}
+          </motion.button>
+        ))}
       </div>
 
-      {/* Product cards grid */}
+      {/* Sous-catégories (accordion) */}
+      <AnimatePresence>
+        {subCategories.length > 0 && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              overflow: 'hidden',
+              marginBottom: '1rem'
+            }}
+          >
+            <div
+              onClick={() => setSubOpen(!subOpen)}
+              style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', marginBottom: '0.5rem' }}
+            >
+              <ChevronDown
+                size={18}
+                style={{ marginRight: '0.5rem', transform: subOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.3s' }}
+              />
+              <span style={{ fontWeight: 600, color: '#2a7f62' }}>Sous-catégories</span>
+            </div>
+
+            {subOpen && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {subCategories.map(sub => (
+                  <motion.button
+                    key={sub}
+                    onClick={() => setActiveSub(sub)}
+                    whileTap={{ scale: 0.95 }}
+                    style={{
+                      padding: '0.4rem 0.8rem',
+                      borderRadius: '6px',
+                      border: '1px solid',
+                      borderColor: activeSub === sub ? '#2a7f62' : '#ccc',
+                      background: activeSub === sub ? '#d8f0e3' : 'white',
+                      color: activeSub === sub ? '#2a7f62' : '#555',
+                      fontWeight: activeSub === sub ? 600 : 400,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {sub}
+                  </motion.button>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Grille de produits */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))',
-        gap: isMobile ? '0.5rem' : '1rem'
+        gap: '1rem'
       }}>
         {filtered.map(prod => (
-          <div
+          <motion.div
             key={prod.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
             style={{
               position: 'relative',
+              height: isMobile ? '180px' : '220px',
               borderRadius: '8px',
               overflow: 'hidden',
-              height: isMobile ? '180px' : '220px',
               backgroundImage: `url(/photos/produits/${prod.id}.jpg)`,
               backgroundSize: 'cover',
               backgroundPosition: 'center'
@@ -148,14 +187,16 @@ const ProductPage = () => {
           >
             <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.2)' }} />
             <div style={{
-              position: 'absolute', bottom: 0, width: '100%',
-              backgroundColor: 'rgba(255,255,255,0.8)', padding: isMobile ? '0.5rem' : '0.75rem'
-            }}
-            >
-              <h4 style={{ margin: 0, color: '#333', fontSize: isMobile ? '1rem' : '1.1rem' }}>{prod.name}</h4>
-              <p style={{ margin: 0, fontSize: isMobile ? '0.75rem' : '0.85rem', color: '#666' }}>{prod.category}</p>
+              position: 'absolute',
+              bottom: 0,
+              width: '100%',
+              backgroundColor: 'rgba(255,255,255,0.85)',
+              padding: '0.5rem'
+            }}>
+              <h4 style={{ margin: 0, fontSize: '1rem', color: '#2a7f62' }}>{prod.name}</h4>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#666' }}>{prod.category}</p>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </main>
