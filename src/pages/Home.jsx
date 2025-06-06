@@ -21,7 +21,7 @@ const Home = () => (
         position: 'relative'
       }}
     >
-      <h1 style={{ fontSize: '4rem', margin: 0, textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
+      <h1 style={{ fontSize: '4rem', margin: 0 }}>
         Bienvenue chez Schwander Fruits
       </h1>
       <p style={{ fontSize: '1.25rem', margin: '1rem 0', maxWidth: '600px', textShadow: '1px 1px 3px rgba(0,0,0,0.5)' }}>
