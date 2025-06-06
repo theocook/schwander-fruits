@@ -1,0 +1,28 @@
+body {
+  margin: 0;
+  font-family: 'Baloo 2', Arial, sans-serif;
+  background-color: #fafafa;
+  color: #333;
+  overflow-y: scroll;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+header,
+footer {
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+footer {
+  border-top: 1px solid #eee;
+}
