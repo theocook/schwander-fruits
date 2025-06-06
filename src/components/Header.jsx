@@ -61,8 +61,10 @@ const Header = () => {
           {pathname === item.path && (
             <motion.span
               layoutId="nav-underline"
-              style={{ position: 'absolute', bottom: -4, left: 0, width: '100%', height: 3,
-                backgroundColor: !isHome || isScrolled ? '#2a7f62' : '#fff', borderRadius: 2 }}
+              style={{
+                position: 'absolute', bottom: -4, left: 0, width: '100%', height: 3,
+                backgroundColor: !isHome || isScrolled ? '#2a7f62' : '#fff', borderRadius: 2
+              }}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
             />
           )}
@@ -77,7 +79,7 @@ const Header = () => {
       top: menuOpen ? (isMobile ? '60px' : '80px') : '-100%',
       left: 0,
       width: '100%',
-      height: `calc(100vh - ${isMobile ? '60px' : '80px'})`,  
+      height: `calc(100vh - ${isMobile ? '60px' : '80px'})`,
       backgroundColor: '#fff',
       display: 'flex',
       flexDirection: 'column',
@@ -111,7 +113,9 @@ const Header = () => {
           {(!isHome || isScrolled || menuOpen) && (
             <Link to="/" style={{ display: 'flex', alignItems: 'center', color: '#2A7E63' }}>
               <img src="/photos/logos/logo.png" alt="Schwander Fruits" style={{ height: isMobile ? 40 : 40, marginRight: '0.5rem' }} />
-              {<span style={{ fontSize: isMobile ? '1.5rem' : '1.25rem', fontWeight: 600, color: '#2A7E63' }}>Schwander Fruits</span>}
+              {!isMobile && (
+                <span style={{ fontSize: '1.5rem', fontWeight: 600, color: '#2A7E63' }}>Schwander Fruits</span>
+              )}
             </Link>
           )}
 

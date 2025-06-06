@@ -19,7 +19,7 @@ const Footer = () => (
         <h4 style={{ marginBottom: '0.75rem', color: '#2a7f62' }}>Horaires</h4>
         <ul style={{ listStyle: 'none', padding: 0, margin: 0, color: '#333', lineHeight: 1.8 }}>
           <li>
-            <strong>Lundi :</strong> 08:00–18:30
+            <strong>Lundi :</strong> 10:00–18:30
           </li>
           <li>
             <strong>Mardi :</strong> 14:00–18:30
@@ -37,7 +37,7 @@ const Footer = () => (
             <strong>Samedi :</strong> 14:00–17:30
           </li>
           <li>
-            <strong>Dimanche :</strong> Fermé
+            <strong>Dimanche :</strong> 9:30–17:00
           </li>
         </ul>
       </div>

@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: 'Baloo 2', Arial, sans-serif;
+  font-family: "Baloo 2";
   background-color: #fafafa;
   color: #333;
   overflow-y: scroll;
@@ -20,7 +20,6 @@ a {
 header,
 footer {
   background-color: #fff;
-  border-bottom: 1px solid #eee;
 }
 
 footer {

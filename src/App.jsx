@@ -9,7 +9,7 @@ import ProductPage from './pages/ProductPage';
 import Contact from './pages/Contact';
 
 const App = () => (
-  <>
+  <><link href='https://fonts.googleapis.com/css?family=Baloo 2' rel='stylesheet'></link>
     <Header />
     <Routes>
       <Route path="/" element={<Home />} />

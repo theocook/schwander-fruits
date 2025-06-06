@@ -117,8 +117,8 @@ const Home = () => (
       <div className="container" style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
         {[
           { text: 'Le top du maraîcher de la région yverdonnoise !', author: 'Luca E.' },
-          { text: 'Chaleureux accueil, large choix de bons fruits et légumes du terroir', author: 'Sebastien G.' },
-          { text: 'Des fruits de saisons délicieux !', author: 'Cirino M.' }
+          { text: 'Des fruits de saisons délicieux !', author: 'Cirino M.' },
+          { text: 'Chaleureux accueil, large choix de bons fruits et légumes du terroir', author: 'Sebastien G.' }
         ].map((t, idx) => (
           <div
             key={idx}

@@ -31,6 +31,7 @@ const Contact = () => {
                     style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '1rem' }}
                 >
                     <h3>Envoyer un message</h3>
+                    <a>Prénom et Nom</a>
                     <input
                         type="text"
                         name="name"
