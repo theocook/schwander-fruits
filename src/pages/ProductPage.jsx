@@ -1,206 +1,173 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { products } from '../data/products';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from "react";
+import { products } from '../data/productsX';
+import "../index.css";
 
-const mainCategories = ['Tous', 'Fruits', 'Légumes', 'Autres'];
+const categories = ["Tous", "Fruits", "Légumes", "Autres"];
 
-const ProductPage = () => {
-  const [activeMain, setActiveMain] = useState('Tous');
-  const [activeSub, setActiveSub] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [subOpen, setSubOpen] = useState(true);
+const ProductCatalog = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Tous");
 
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const subCategories = useMemo(() => {
-    if (activeMain === 'Fruits') return ['Tous les fruits', 'Pommes', 'Poires', 'Cerises', 'Abricots', 'Pêches'];
-    if (activeMain === 'Légumes') return ['Tous les légumes', 'Pommes de terre', 'Légumes verts'];
-    return [];
-  }, [activeMain]);
-
-  useEffect(() => {
-    setActiveSub(subCategories[0] || null);
-  }, [subCategories]);
-
-  const filtered = useMemo(() =>
-    products.filter(p => {
-      const term = searchTerm.toLowerCase();
-      const matchesSearch = p.name.toLowerCase().includes(term) || p.category.toLowerCase().includes(term);
-
-      if (activeMain === 'Tous') return matchesSearch;
-      if (activeMain === 'Fruits') {
-        const cats = ['Pommes', 'Poires', 'Cerises', 'Abricots', 'Pêches'];
-        if (activeSub === 'Tous les fruits') return matchesSearch && cats.includes(p.category);
-        return matchesSearch && p.category === activeSub;
-      }
-      if (activeMain === 'Légumes') {
-        const cats = ['Pommes de terre', 'Légumes verts'];
-        if (activeSub === 'Tous les légumes') return matchesSearch && cats.includes(p.category);
-        return matchesSearch && p.category === activeSub;
-      }
-      return matchesSearch && p.category === 'Autres produits';
-    }),
-    [activeMain, activeSub, searchTerm]
-  );
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      const matchesCategory = selectedCategory === "Tous" || product.category === selectedCategory;
+      const matchesSearch = !searchTerm || (
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.subcategory.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      return matchesCategory && matchesSearch;
+    });
+  }, [searchTerm, selectedCategory]);
 
   return (
-    <main className="container" style={{ padding: isMobile ? '1rem' : '2rem' }}>
-      <h2 style={{ textAlign: 'center', color: '#3a6f4b', marginBottom: '1rem' }}>
-        Découvre notre sélection
-      </h2>
-
-      {/* Champ de recherche */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginBottom: '1rem'
-        }}
-      >
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          placeholder="🔍 Rechercher un produit..."
-          style={{
-            width: '100%',
-            maxWidth: '500px',
-            padding: '0.75rem 1rem',
-            borderRadius: '999px',
-            border: '1px solid #ccc',
-            fontSize: '1rem'
-          }}
-        />
-      </motion.div>
-
-      {/* Catégories principales (scroll horizontal) */}
-      <div style={{
-        display: 'flex',
-        overflowX: 'auto',
-        gap: '0.75rem',
-        padding: '0.5rem 0',
-        marginBottom: '0.5rem'
-      }}>
-        {mainCategories.map(cat => (
-          <motion.button
-            key={cat}
-            onClick={() => { setActiveMain(cat); setSearchTerm(''); }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              flexShrink: 0,
-              padding: '0.5rem 1rem',
-              borderRadius: '999px',
-              border: '1px solid',
-              borderColor: activeMain === cat ? '#2a7f62' : '#ccc',
-              background: activeMain === cat ? '#e6f4ec' : 'white',
-              color: activeMain === cat ? '#2a7f62' : '#555',
-              fontWeight: activeMain === cat ? 600 : 400,
-              cursor: 'pointer'
-            }}
-          >
-            {cat}
-          </motion.button>
-        ))}
-      </div>
-
-      {/* Sous-catégories (accordion) */}
-      <AnimatePresence>
-        {subCategories.length > 0 && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{
-              overflow: 'hidden',
-              marginBottom: '1rem'
-            }}
-          >
-            <div
-              onClick={() => setSubOpen(!subOpen)}
-              style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', marginBottom: '0.5rem' }}
-            >
-              <ChevronDown
-                size={18}
-                style={{ marginRight: '0.5rem', transform: subOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.3s' }}
-              />
-              <span style={{ fontWeight: 600, color: '#2a7f62' }}>Sous-catégories</span>
-            </div>
-
-            {subOpen && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {subCategories.map(sub => (
-                  <motion.button
-                    key={sub}
-                    onClick={() => setActiveSub(sub)}
-                    whileTap={{ scale: 0.95 }}
-                    style={{
-                      padding: '0.4rem 0.8rem',
-                      borderRadius: '6px',
-                      border: '1px solid',
-                      borderColor: activeSub === sub ? '#2a7f62' : '#ccc',
-                      background: activeSub === sub ? '#d8f0e3' : 'white',
-                      color: activeSub === sub ? '#2a7f62' : '#555',
-                      fontWeight: activeSub === sub ? 600 : 400,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {sub}
-                  </motion.button>
-                ))}
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 scroll-smooth">
+      <div className="relative overflow-hidden bg-gradient-to-r from-green-600 via-green-700 to-emerald-800">
+        <div className="absolute inset-0 bg-black opacity-20"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="text-center">
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+              Découvre notre sélection
+            </h1>
+            <p className="text-xl text-green-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Une collection exceptionnelle de produits frais et savoureux, 
+              sélectionnés avec passion pour leur qualité incomparable
+            </p>
+            
+            {/* Search Bar */}
+            <div className="max-w-2xl mx-auto relative">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Rechercher un produit..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-6 py-4 text-lg rounded-2xl border-0 shadow-2xl focus:ring-4 focus:ring-green-300 focus:outline-none bg-white/95 backdrop-blur-sm placeholder-gray-500"
+                />
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                  <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
               </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Grille de produits */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))',
-        gap: '1rem'
-      }}>
-        {filtered.map(prod => (
-          <motion.div
-            key={prod.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{
-              position: 'relative',
-              height: isMobile ? '180px' : '220px',
-              borderRadius: '8px',
-              overflow: 'hidden',
-              backgroundImage: `url(/photos/produits/${prod.id}.jpg)`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }}
-          >
-            <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.2)' }} />
-            <div style={{
-              position: 'absolute',
-              bottom: 0,
-              width: '100%',
-              backgroundColor: 'rgba(255,255,255,0.85)',
-              padding: '0.5rem'
-            }}>
-              <h4 style={{ margin: 0, fontSize: '1rem', color: '#2a7f62' }}>{prod.name}</h4>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: '#666' }}>{prod.category}</p>
             </div>
-          </motion.div>
-        ))}
+          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 120L1440 120L1440 0C1200 40 800 80 0 40V120Z" fill="rgb(249 250 251)"/>
+          </svg>
+        </div>
       </div>
-    </main>
+
+      {/* Category Filters */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-wrap justify-center gap-4 mb-12">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-8 py-3 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg ${
+                selectedCategory === category
+                  ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-green-300"
+                  : "bg-white text-gray-700 hover:bg-gray-50 shadow-gray-200"
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+
+        {/* Products Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {filteredProducts.map((product) => (
+            <div
+              key={product.id}
+              className="group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden"
+            >
+              {/* Product Image */}
+              <div className="relative h-64 overflow-hidden rounded-t-3xl">
+                {/* Product Image 
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+                */}
+                <img 
+                src="../../public/photo/placeholder.png"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                {/* Season Badge */}
+                <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+                  {product.season}
+                </div>
+              </div>
+
+              {/* Product Info */}
+              <div className="p-6">
+                <div className="mb-3">
+                  <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-green-600 transition-colors duration-300">
+                    {product.name}
+                  </h3>
+                  <p className="text-sm font-medium text-green-600 uppercase tracking-wide">
+                    {product.subcategory}
+                  </p>
+                </div>
+
+                <p className="text-gray-600 mb-4 leading-relaxed">
+                  {product.description}
+                </p>
+
+                {/* Origin */}
+                <div className="flex items-center mb-4 text-sm text-gray-500">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Origine: {product.origin}
+                </div>
+
+                {/* Characteristics Tags */}
+                <div className="flex flex-wrap gap-2">
+                  {product.characteristics.map((char, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 text-xs font-medium rounded-full border border-green-200"
+                    >
+                      {char}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-green-600/90 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6">
+                <button className="bg-white text-green-600 px-6 py-3 rounded-full font-semibold shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:bg-green-50">
+                  En savoir plus
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* No Results */}
+        {filteredProducts.length === 0 && (
+          <div className="text-center py-16">
+            <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucun produit trouvé</h3>
+            <p className="text-gray-600">Essayez de modifier vos critères de recherche</p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
-export default ProductPage;
+export default ProductCatalog;
