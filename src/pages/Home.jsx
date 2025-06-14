@@ -24,7 +24,7 @@ const Home = () => (
       }}
     >
       <h1 className="responsive-title" style={{ margin: 0, lineHeight: 1.2 }}>
-        Bienvenue chez Schwander Fruits
+        <b>Bienvenue chez Schwander Fruits</b>
       </h1>
       <p style={{ fontSize: '1.25rem', margin: '1rem 0', maxWidth: '600px', textShadow: '1px 1px 3px rgba(0,0,0,0.5)' }}>
         Découvrez nos fruits et légumes frais, cultivés avec passion.

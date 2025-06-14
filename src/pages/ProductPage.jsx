@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { products } from '../data/productsX';
+import { products } from '../data/products';
 import "../index.css";
 
 const categories = ["Tous", "Fruits", "Légumes", "Autres"];
@@ -8,17 +8,30 @@ const ProductCatalog = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Tous");
 
-  const filteredProducts = useMemo(() => {
-    return products.filter(product => {
-      const matchesCategory = selectedCategory === "Tous" || product.category === selectedCategory;
-      const matchesSearch = !searchTerm || (
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.subcategory.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      return matchesCategory && matchesSearch;
-    });
-  }, [searchTerm, selectedCategory]);
+ const categoryMap = {
+  Fruits: ["Pommes", "Poires", "Cerises", "Prunes", "Pruneaux", "Pêches", "Abricots"],
+  Légumes: ["Légumes", "Pommes de terre"],
+  Autres: ["Autres produits"]
+};
+
+const filteredProducts = useMemo(() => {
+  return products.filter((product) => {
+    const name = product.name ? product.name.toLowerCase() : "";
+    const description = product.description?.toLowerCase() || "";
+    const subcategory = product.subcategory?.toLowerCase() || "";
+
+    const matchesSearch =
+      !searchTerm ||
+      name.includes(searchTerm.toLowerCase()) ||
+      description.includes(searchTerm.toLowerCase()) ||
+      subcategory.includes(searchTerm.toLowerCase());
+
+    if (selectedCategory === "Tous") return matchesSearch;
+
+    const validCategories = categoryMap[selectedCategory] || [];
+    return matchesSearch && validCategories.includes(product.category);
+  });
+}, [searchTerm, selectedCategory]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 scroll-smooth">
@@ -54,7 +67,7 @@ const ProductCatalog = () => {
           </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 1440 70" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0 120L1440 120L1440 0C1200 40 800 80 0 40V120Z" fill="rgb(249 250 251)"/>
           </svg>
         </div>
@@ -87,16 +100,10 @@ const ProductCatalog = () => {
             >
               {/* Product Image */}
               <div className="relative h-64 overflow-hidden rounded-t-3xl">
-                {/* Product Image 
                 <img
                   src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                */}
-                <img 
-                src="../../public/photo/placeholder.png"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 
