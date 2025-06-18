@@ -31,16 +31,7 @@ const Home = () => (
         Vente directe au marché et à la ferme.
       </p>
       <Link to="/products">
-        <button className='bg-green-600 transition duration-300 hover:bg-white hover:text-green-700'
-          style={{
-            padding: '0.75rem 1.5rem',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '1.125rem',
-            boxShadow: '2px 2px 6px rgba(0,0,0,0.3)'
-          }}
+        <button className='bg-green-600 transition-colors duration-500 ease-in-out hover:bg-white hover:text-green-700 hover:border-double hover:border-4 hover:border-green-700 rounded-full py-3 px-6 mt-3 border-4 border-transparent'
         >
           Découvrir
         </button>
