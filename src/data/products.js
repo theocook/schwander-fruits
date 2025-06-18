@@ -256,7 +256,7 @@ export const products = [
   },
   {
     "id": 18,
-    "name": null,
+    "name": "Clapp's Favorite",
     "category": "Poires",
     "subcategory": "Poires",
     "image": "/photos/produits/clapps-favorite.jpg",
@@ -406,7 +406,7 @@ export const products = [
   },
   {
     "id": 28,
-    "name": null,
+    "name": "Reine-Claude d'Oullins",
     "category": "Prunes",
     "subcategory": "Prunes",
     "image": "/photos/produits/reine-claude-doullins.jpg",

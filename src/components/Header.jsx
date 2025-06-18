@@ -56,7 +56,7 @@ const Header = () => {
     alignItems: 'center',
     height: isMobile ? '60px' : '80px',
     transform: showHeader ? 'translateY(0)' : 'translateY(-100%)',
-    transition: 'transform 0.7s ease, background-color 0.3s ease, box-shadow 0.3s ease',
+    transition: 'transform 0.5s ease-in-out, background-color 0.3s ease, box-shadow 0.3s ease',
     backgroundColor: (isHome && !isScrolled && !menuOpen) ? 'transparent' : 'rgba(248, 248, 248, 1)',
     boxShadow: (isHome && !isScrolled && !menuOpen) ? 'none' : '0 2px 8px rgba(0,0,0,0.1)'
   };
@@ -109,7 +109,7 @@ const Header = () => {
       flexDirection: 'column',
       alignItems: 'center',
       paddingTop: '20px',
-      transition: 'top 0.8s ease',
+      transition: 'top 0.3s ease-in-expo',
       zIndex: 99
     }}>
       {navItems.map(item => (
