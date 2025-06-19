@@ -144,6 +144,7 @@ const Header = () => {
               )}
             </Link>
           )}
+          <div style={{ width: isMobile ? 40 : 200 }} />
 
           {navLinks}
 
