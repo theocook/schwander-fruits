@@ -101,13 +101,9 @@ const Contact = () => {
                     <button
                         type="submit"
                         style={{
-                            padding: '0.75rem',
-                            backgroundColor: '#2a7f62',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '4px',
                             cursor: 'pointer'
                         }}
+                        className='text-white bg-green-600 transition-colors duration-500 ease-in-out hover:bg-white hover:text-green-700 hover:border-double hover:border-4 hover:border-green-700 rounded-full py-3 px-6 border-4 border-transparent'
                     >
                         Envoyer
                     </button>
