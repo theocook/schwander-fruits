@@ -1,7 +1,7 @@
 // src/components/Header.jsx
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
 const navItems = [
@@ -97,33 +97,37 @@ const Header = () => {
     </nav>
   );
 
-  const mobileMenu = (
-    <div style={{
-      position: 'fixed',
-      top: menuOpen ? (isMobile ? '60px' : '80px') : '-100%',
-      left: 0,
-      width: '100%',
-      height: `calc(100vh - ${isMobile ? '60px' : '80px'})`,
-      backgroundColor: '#fff',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      paddingTop: '20px',
-      transition: 'top 0.3s ease-in-expo',
-      zIndex: 99
-    }}>
-      {navItems.map(item => (
-        <Link
-          key={item.path}
-          to={item.path}
-          style={{ margin: '1rem 0', fontSize: '1.25rem', color: '#2A7E63', textDecoration: 'none' }}
-          onClick={() => setMenuOpen(false)}
-        >
-          {item.label}
-        </Link>
-      ))}
-    </div>
-  );
+// Menu Mobile --------------------------------
+const mobileMenu = (
+  <AnimatePresence>
+    {menuOpen && (
+      <motion.div
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ duration: 0.4, ease: [0.42, 0, 0.58, 1] }}
+        className="fixed top-[60px] right-0 z-[99] h-[calc(100vh-60px)] w-3/4 max-w-xs bg-white/80 backdrop-blur-lg shadow-xl px-6 py-8 flex flex-col justify-between"
+      >
+        <div className="space-y-6">
+          <nav className="flex flex-col space-y-4">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setMenuOpen(false)}
+                className="text-3xl text-emerald-800 hover:text-emerald-600 transition py-2"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
 
   return (
     <>
@@ -149,21 +153,52 @@ const Header = () => {
           {navLinks}
 
           {isMobile && (
-            <button
-              onClick={() => {
-                const newValue = !menuOpen;
-                setMenuOpen(newValue);
-                if (newValue) setShowHeader(true);
-              }}
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-            >
-              {menuOpen ? (
-                <X size={24} color={isHome && !isScrolled ? '#2A7E63' : '#2A7E63'} />
-              ) : (
-                <Menu size={24} color={isHome && !isScrolled ? '#fff' : '#2A7E63'} />
-              )}
-            </button>
+              <motion.button
+                onClick={() => {
+                  const newValue = !menuOpen;
+                  setMenuOpen(newValue);
+                  if (newValue) setShowHeader(true);
+                }}
+                initial={false}
+                animate={{ scale: 1 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0.25rem'
+                }}
+              >
+                <AnimatePresence mode="wait" initial={false}>
+                  {menuOpen ? (
+                    <motion.div
+                      key="close"
+                      initial={{ opacity: 0, scale: 0.7, rotate: -20 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                      exit={{ opacity: 0, scale: 0.7, rotate: 10 }}
+                      transition={{ duration: 0.3, ease: [0.4, 0.13, 0.23, 0.96] }}
+                    >
+                      <X size={28} color="#2A7E63" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="menu"
+                      initial={{ opacity: 0, scale: 0.7, rotate: 20 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                      exit={{ opacity: 0, scale: 0.7, rotate: -10 }}
+                      transition={{ duration: 0.3, ease: [0.4, 0.13, 0.23, 0.96] }}
+                    >
+                      <Menu size={28} color={isHome && !isScrolled ? '#fff' : '#2A7E63'} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.button>
           )}
+
         </div>
       </header>
 
